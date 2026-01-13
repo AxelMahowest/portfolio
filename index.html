@@ -69,16 +69,35 @@
                 <h2>Projects</h2>
                 <div class="projects-container">
                     <div class="project-card">
+                        <div class="project-image" onclick="openModal('images/gogomon.jpg', 'Gogomon app')">
+                            <img src="images/gogomon.jpg" alt="Gogomon app" />
+                            <div class="image-overlay">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                        </div>
                         <h3>Gogomon</h3>
                         <p>A mobile tamagotchi app developed with .Net Maui. Using a stepcounter to interact with your virtual pet on both Android and wearOS devices.</p>
                     </div> 
                     <div class="project-card">
+                        <div class="project-image" onclick="openModal('images/theatermaster.png', 'TheaterMaster system')">
+                            <img src="images/theatermaster.png" alt="TheaterMaster system" />
+                            <div class="image-overlay">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                        </div>
                         <h3>TheaterMaster</h3>
                         <p>A restful API-based theater management system with a blazor frontend. JWT authentication and role-based access control implemented for secure user management.</p>
                     </div>
                     <div class="project-card">
+                        <div class="project-image" onclick="openModal('images/ship2.jpg', 'VLIZ internship project')">
+                            <img src="images/ship2.jpg" alt="VLIZ internship project" />
+                            <div class="image-overlay">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                        </div>
                         <h3>Internship at VLIZ</h3>
                         <p>A, for the most part, solo project using an existing SQL database, linked with MS ACCESS, fully revamped to a Symfony/PHP web application and a React frontend.</p>
+                        <p>The existing database is used to manage all historical data regarding the belgian fishing fleet.</p>
                     </div>
                 </div>
             </div>
@@ -111,6 +130,46 @@
             <p>&copy; 2026 Axel Martens</p>
         </div>
     </footer>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img id="modalImage" src="" alt="" />
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(imageSrc, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+            
+            modal.style.display = 'flex';
+            modalImage.src = imageSrc;
+            modalCaption.textContent = caption;
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+        
+        // Prevent modal from closing when clicking on the image
+        document.getElementById('modalImage').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    </script>
 
 </body>
 </html>
