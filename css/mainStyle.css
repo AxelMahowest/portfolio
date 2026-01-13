@@ -44,23 +44,29 @@ body {
 }
 
 .ball-decoration img {
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     filter: drop-shadow(0 5px 15px rgba(35, 40, 99, 0.2));
 }
 
 .ball-header {
-    top: -150px;
-    right: -150px;
+    top: -100px;
+    right: -50px;
     animation: floatBall 6s ease-in-out infinite;
+    
 }
 
 .ball-footer {
-    position: fixed;
+    position: absolute;
     bottom: -150px;
     left: -150px;
     animation: floatBall 6s ease-in-out infinite reverse;
+}
+
+.ball-footer img {
+    width: 470px;
+    height: 470px;
 }
 
 @keyframes floatBall {
@@ -101,12 +107,14 @@ header h1 {
 
 nav {
     margin-left: auto;
+    transform: translateX(-150px);
 }
 
 nav ul {
     list-style: none;
     display: flex;
     gap: 2rem;
+    margin-left: 200px;
 }
 
 nav ul li a {
@@ -312,6 +320,7 @@ footer {
     text-align: center;
     padding: 3rem 0;
     position: relative;
+    overflow: hidden;
 }
 
 .footer-content {
@@ -369,6 +378,7 @@ footer {
     
     nav ul {
         gap: 1rem;
+        margin-left: -200px;
     }
     
     nav ul li a {
