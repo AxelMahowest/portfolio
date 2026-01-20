@@ -229,11 +229,13 @@ h2::after {
     overflow: hidden;
     box-shadow: var(--box-shadow);
     transition: var(--transition);
+    border: 2px solid transparent;
 }
 
 .interest-card:hover {
     transform: translateY(-10px) rotateX(5deg);
     box-shadow: 0 20px 40px rgba(35, 40, 99, 0.2);
+    border-color: var(--primary-color);
 }
 
 .interest-image {
