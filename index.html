@@ -13,6 +13,11 @@
             <img src="images/ball-removebg-preview.png" alt="Decorative ball" />
         </div>
         <h1>Axel Martens</h1>
+        <button class="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <nav>
             <ul>
                 <li><a href="#about">About Me</a></li>
@@ -398,6 +403,32 @@
         // Initialize animations when page loads
         document.addEventListener('DOMContentLoaded', function() {
             animateSkillBars();
+            
+            // Mobile menu functionality
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const nav = document.querySelector('nav');
+            
+            mobileMenuToggle.addEventListener('click', function() {
+                nav.classList.toggle('nav-open');
+                mobileMenuToggle.classList.toggle('menu-open');
+            });
+            
+            // Close mobile menu when clicking on nav links
+            const navLinks = document.querySelectorAll('nav ul li a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    nav.classList.remove('nav-open');
+                    mobileMenuToggle.classList.remove('menu-open');
+                });
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!nav.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    nav.classList.remove('nav-open');
+                    mobileMenuToggle.classList.remove('menu-open');
+                }
+            });
         });
     </script>
 
