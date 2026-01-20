@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/mainStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Axel Martens Portfolio</title>
+</head>
+<body>
+    <header>
+        <div class="ball-decoration ball-header">
+            <img src="images/ball-removebg-preview.png" alt="Decorative ball" />
+        </div>
+        <h1>Axel Martens</h1>
+        <nav>
+            <ul>
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#interests">Interests</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="about" class="section-fluid">
+            <div class="content-wrapper">
+                <h2>About Me</h2>
+                <div class="about-content">
+                    <div class="profile-image">
+                        <img src="images/Axel.jpg" alt="Axel Martens" />
+                    </div>
+                    <div class="about-text">
+                        <p>I'm Axel, Full stack developer with experience in a variety of different languages. Currently looking for a new opportunity that allows me to expand my skills and contribute to exciting projects.</p>
+                        <p>Continuous learning is a core value of mine. I function best in a team environment, good communication skills are essential to me. However, solo projects don't deter me and often provide valuable learning experiences.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="interests" class="section-fluid">
+            <div class="content-wrapper">
+                <h2>Interests & Passions</h2>
+                <div class="interests-grid">
+                    <div class="interest-card">
+                        <div class="interest-image">
+                            <img src="images/Axelinheli.jpg" alt="Piloting helicopter" />
+                        </div>
+                        <div class="interest-content">
+                            <h3>Aviation</h3>
+                            <p>Helicopter piloting is a passion of mine. I've taken first steps in to achieving my private pilot license and already have some hours of flight experience.</p>
+                        </div>
+                    </div>
+                    <div class="interest-card">
+                        <div class="interest-image">
+                            <img src="images/Banjo.png" alt="Playing banjo" />
+                        </div>
+                        <div class="interest-content">
+                            <h3>Music</h3>
+                            <p>Starting out as an impulse purchase, the banjo quickly became my most beloved hobby. I'm currently playing three finger bluegrass, taking inspiration from the likes of Earl Scruggs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section-fluid">
+            <div class="content-wrapper">
+                <h2>Projects</h2>
+                <div class="projects-container">
+                    <div class="project-card">
+                        <div class="project-image" onclick="openModal('images/gogomon.jpg', 'Gogomon app')">
+                            <img src="images/gogomon.jpg" alt="Gogomon app" class="gogomon-image"/>
+                            <div class="image-overlay">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                        </div>
+                        <h3>Gogomon</h3>
+                        <p>A mobile tamagotchi app developed with .Net Maui. Using a stepcounter to interact with your virtual pet on both Android and wearOS devices.
+                             The app works with both JWT authentication as well as Google sign-in integration and includes features such as adding friends, a streak system, leaderboards and an in game currency/shop system.</p>
+                    </div> 
+                    <div class="project-card">
+                        <div class="project-image" onclick="openModal('images/theatermaster.png', 'TheaterMaster system')">
+                            <img src="images/theatermaster.png" alt="TheaterMaster system" />
+                            <div class="image-overlay">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                        </div>
+                        <h3>TheaterMaster</h3>
+                        <p>A restful API-based theater management system with a blazor frontend. JWT authentication and role-based access control implemented for secure user management.</p>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-image" onclick="openModal('images/ship2.jpg', 'VLIZ internship project')">
+                            <img src="images/ship2.jpg" alt="VLIZ internship project" />
+                            <div class="image-overlay">
+                                <i class="fas fa-expand-alt"></i>
+                            </div>
+                        </div>
+                        <h3>Internship at VLIZ</h3>
+                        <p>A, for the most part, solo project using an existing SQL database, linked with MS ACCESS, fully revamped to a Symfony/PHP web application and a React frontend.</p>
+                        <p>The existing database is used to manage all historical data regarding the belgian fishing fleet.</p>
+                        <p><a href="https://www.vliz.be/en/" target="_blank" rel="noopener noreferrer">Visit VLIZ</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section-fluid">
+            <div class="content-wrapper">
+                <h2>Let's Connect</h2>
+                <div class="contact-content">
+                    <p>Am I a fitting addition to your team? I'd love to hear from you!</p>
+                    <a href="mailto:axel.martens@outlook.be" class="contact-button"><i class="fas fa-envelope"></i> Get In Touch</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="ball-decoration ball-footer">
+            <img src="images/ball-removebg-preview.png" alt="Decorative ball" />
+        </div>
+        <div class="footer-content">
+            <h3>Axel Martens</h3>
+            <p>Full Stack Developer</p>
+            
+            <div class="social-links">
+                <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/axel-martens-517596217/" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                <a href="mailto:axel.martens@outlook.be" class="social-link"><i class="fas fa-envelope"></i></a>
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/AxelMahowest" class="social-link"><i class="fab fa-github"></i></a>
+            </div>
+            
+            <p>&copy; 2026 Axel Martens</p>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img id="modalImage" src="" alt="" />
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(imageSrc, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+            
+            modal.style.display = 'flex';
+            modalImage.src = imageSrc;
+            modalCaption.textContent = caption;
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+        
+        // Prevent modal from closing when clicking on the image
+        document.getElementById('modalImage').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    </script>
+
+</body>
+</html>
