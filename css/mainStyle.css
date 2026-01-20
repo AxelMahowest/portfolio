@@ -25,6 +25,9 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 body {
@@ -33,6 +36,9 @@ body {
     color: var(--primary-color);
     background: linear-gradient(135deg, var(--accent-lavender) 0%, #ffffff 50%, var(--accent-lavender) 100%);
     background-attachment: fixed;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 /* Ball Decoration Styles */
@@ -643,12 +649,17 @@ footer {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    /* Ensure no horizontal overflow */
+    * {
+        max-width: 100%;
+    }
+    
     /* Hide ball decorations on mobile */
     .ball-decoration {
         display: none;
     }
     
-    /* Mobile header */
+    /* Mobile header fixes */
     header {
         padding: 1rem;
         justify-content: space-between;
@@ -656,23 +667,28 @@ footer {
         top: 0;
         z-index: 98;
         overflow: visible;
+        width: 100%;
     }
     
+    /* Mobile menu toggle */
     .mobile-menu-toggle {
         display: flex;
         position: fixed;
         top: 14px;
         right: 14px;
-        z-index: 2001; /* higher than nav (1500) */
+        z-index: 2001;
     }
     
+    /* Navigation overlay - CRITICAL FIXES */
     nav {
         display: block;
         position: fixed;
         top: 0;
         right: -100%;
         width: 80%;
+        max-width: 300px; /* Prevent it from being too wide */
         height: 100vh;
+        height: 100dvh; /* Use dynamic viewport height for mobile browsers */
         background: var(--primary-color) !important;
         transition: right 0.3s ease-in-out;
         z-index: 1500;
@@ -681,12 +697,16 @@ footer {
         transform: none;
         box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
         border-left: 3px solid var(--secondary-color);
+        overflow-y: auto; /* Allow vertical scroll if needed */
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     }
     
     nav.nav-open {
         right: 0 !important;
     }
     
+    /* Navigation list fixes */
     nav ul {
         flex-direction: column !important;
         gap: 0 !important;
@@ -696,6 +716,7 @@ footer {
         list-style: none !important;
         width: 100% !important;
         display: flex !important;
+        overflow: hidden; /* Prevent overflow */
     }
     
     nav ul li {
@@ -704,6 +725,7 @@ footer {
         margin: 0 !important;
         padding: 0 !important;
         display: block !important;
+        overflow: hidden; /* Prevent overflow */
     }
     
     nav ul li a {
@@ -720,6 +742,9 @@ footer {
         box-sizing: border-box;
         border: none;
         text-align: left;
+        white-space: nowrap; /* Prevent text wrapping that could cause overflow */
+        overflow: hidden; /* Hide any overflow */
+        text-overflow: ellipsis; /* Add ellipsis if text is too long */
     }
     
     nav ul li a:hover {
@@ -727,6 +752,29 @@ footer {
         color: #ffffff !important;
         transform: none !important;
         padding-left: 40px !important;
+    }
+    
+    /* Main content fixes */
+    main {
+        padding: 0 1rem;
+        overflow-x: hidden;
+    }
+    
+    .section-fluid {
+        padding: 3rem 0;
+        overflow-x: hidden;
+    }
+    
+    .section-fluid:nth-child(even) {
+        margin: 0 -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Prevent content from causing horizontal scroll */
+    .content-wrapper {
+        max-width: 100%;
+        overflow-x: hidden;
     }
     
     .about-content {
@@ -762,10 +810,6 @@ footer {
         font-size: 1.5rem;
     }
     
-    .section-fluid {
-        padding: 3rem 0;
-    }
-    
     /* Footer mobile responsive */
     .social-links {
         flex-wrap: wrap;
@@ -780,6 +824,7 @@ footer {
     
     footer {
         padding: 2rem 0;
+        overflow-x: hidden;
     }
     
     .footer-content {
