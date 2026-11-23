@@ -39,11 +39,11 @@
     --header-bg: rgba(42, 157, 143, 0.95);
 }
 
-.theme-sunset {
-    --primary-color: #4a2213;
-    --secondary-color: #e76f51;
-    --accent-color: #fdece4;
-    --header-bg: rgba(231, 111, 81, 0.95);
+.theme-gold {
+    --primary-color: #4a3b12;
+    --secondary-color: #d4af37;
+    --accent-color: #fdf6e3;
+    --header-bg: rgba(212, 175, 55, 0.95);
 }
 
 .theme-forest {
@@ -65,6 +65,67 @@
     --secondary-color: #e8739c;
     --accent-color: #ffeef4;
     --header-bg: rgba(232, 115, 156, 0.95);
+}
+
+/* Gold theme flourish: falling confetti + twinkling sparkles. The container
+   is always in the DOM but only shown while the gold theme is active, and
+   its pieces are generated in JS (random left/delay/duration per piece). */
+.gold-fx {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+body.theme-gold .gold-fx {
+    display: block;
+}
+
+.confetti-piece {
+    position: absolute;
+    top: -5%;
+    width: 8px;
+    height: 14px;
+    opacity: 0.85;
+    border-radius: 2px;
+    animation-name: confettiFall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translate3d(0, -10vh, 0) rotate(0deg);
+    }
+    100% {
+        transform: translate3d(var(--drift, 40px), 110vh, 0) rotate(360deg);
+    }
+}
+
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff6d8;
+    box-shadow: 0 0 6px 2px rgba(255, 223, 128, 0.9);
+    opacity: 0;
+    animation-name: sparkleTwinkle;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+@keyframes sparkleTwinkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 }
 
 html {
@@ -703,21 +764,30 @@ footer {
 .nav-cube-trigger {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
+    gap: 0.6rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 25px;
     border: none;
     background: rgba(255, 255, 255, 0.2);
     color: var(--text-light);
-    font-size: 1.2rem;
+    font-family: var(--secondary-font);
+    font-weight: 600;
+    font-size: 1.1rem;
     cursor: pointer;
+    transition: var(--transition);
+}
+
+.nav-cube-trigger i {
+    font-size: 1.1rem;
     transition: var(--transition);
 }
 
 .nav-cube-trigger:hover {
     background: rgba(255, 255, 255, 0.35);
-    transform: scale(1.1) rotate(12deg);
+}
+
+.nav-cube-trigger:hover i {
+    transform: scale(1.15) rotate(12deg);
 }
 
 /* Theme Cube Modal */
@@ -801,8 +871,107 @@ footer {
 .theme-cube-face--back   { background: linear-gradient(135deg, #1f3d2b, #52b788); transform: rotateY(180deg) translateZ(100px); }
 .theme-cube-face--right  { background: linear-gradient(135deg, #332455, #9d8df1); transform: rotateY(90deg) translateZ(100px); }
 .theme-cube-face--left   { background: linear-gradient(135deg, #123b3d, #2a9d8f); transform: rotateY(-90deg) translateZ(100px); }
-.theme-cube-face--top    { background: linear-gradient(135deg, #4a2213, #e76f51); transform: rotateX(90deg) translateZ(100px); }
+.theme-cube-face--top    { background: linear-gradient(135deg, #7a5c0f, #e8c547); transform: rotateX(90deg) translateZ(100px); }
 .theme-cube-face--bottom { background: linear-gradient(135deg, #4a1930, #e8739c); transform: rotateX(-90deg) translateZ(100px); }
+
+.theme-cube-face--top.is-locked {
+    filter: grayscale(0.7) brightness(0.75);
+}
+
+.theme-cube-lock-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+.theme-cube-face--top:not(.is-locked) .theme-cube-lock-icon {
+    display: none;
+}
+
+.cube-minigame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-light);
+    font-family: var(--secondary-font);
+}
+
+/* Without this, the [hidden] attribute gets overridden by the display:flex
+   rule above, since author CSS beats the browser's own [hidden] styling. */
+.cube-minigame[hidden] {
+    display: none;
+}
+
+.cube-minigame-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #d4af37;
+}
+
+.cube-minigame-status {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    min-height: 1.4em;
+    text-align: center;
+}
+
+.simon-pads {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 220px;
+    height: 220px;
+    margin: 0.5rem 0;
+}
+
+.simon-pad {
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.simon-pad:hover {
+    opacity: 0.75;
+}
+
+.simon-pad.is-active {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+}
+
+.simon-pad:disabled {
+    cursor: default;
+}
+
+.simon-pad[data-pad="0"] { background: #f27a64; }
+.simon-pad[data-pad="1"] { background: #2a9d8f; }
+.simon-pad[data-pad="2"] { background: #9d8df1; }
+.simon-pad[data-pad="3"] { background: #e8739c; }
+
+.cube-minigame-cancel {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: var(--text-light);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-family: var(--secondary-font);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cube-minigame-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
 
 .cube-modal-hint {
     margin-top: 2rem;
@@ -1028,6 +1197,11 @@ footer {
     .theme-cube-face--left   { transform: rotateY(-90deg) translateZ(70px); }
     .theme-cube-face--top    { transform: rotateX(90deg) translateZ(70px); }
     .theme-cube-face--bottom { transform: rotateX(-90deg) translateZ(70px); }
+
+    .simon-pads {
+        width: 180px;
+        height: 180px;
+    }
 
     .nav-cube-item {
         width: 100% !important;
