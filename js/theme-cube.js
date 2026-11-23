@@ -12,9 +12,24 @@ const CUBE_FACES = [
     { theme: 'theme-forest', nx: 0, ny: 0, nz: -1, rotX: 0, rotY: 180 },
     { theme: 'theme-lavender', nx: 1, ny: 0, nz: 0, rotX: 0, rotY: -90 },
     { theme: 'theme-teal', nx: -1, ny: 0, nz: 0, rotX: 0, rotY: 90 },
-    { theme: 'theme-sunset', nx: 0, ny: -1, nz: 0, rotX: -90, rotY: 0 },
+    { theme: 'theme-gold', nx: 0, ny: -1, nz: 0, rotX: -90, rotY: 0 },
     { theme: 'theme-rose', nx: 0, ny: 1, nz: 0, rotX: 90, rotY: 0 },
 ];
+
+const GOLD_THEME = 'theme-gold';
+
+// Unlocked state lives only in memory, not localStorage - it resets back to
+// locked on every page load/visit, but stays unlocked for the rest of this
+// one as you open and close the modal.
+let goldUnlocked = false;
+
+function isGoldUnlocked() {
+    return goldUnlocked;
+}
+
+function setGoldUnlocked() {
+    goldUnlocked = true;
+}
 
 const IDLE_ROT_X = -20;
 const IDLE_ROT_Y = -30;
@@ -23,6 +38,7 @@ const DEG_PER_PX = 0.5;
 
 const HINT_DEFAULT = 'Drag to a side, then click the cube to apply it';
 const HINT_PENDING = 'Click the cube (or press Enter) to apply this theme';
+const HINT_LOCKED = 'This one is locked - click to try and unlock it';
 const HINT_APPLIED = 'Theme applied! Drag again to change it';
 
 function idleMatrix() {
@@ -34,10 +50,11 @@ function faceMatrix(face) {
 }
 
 class ThemeCube {
-    constructor(wrapper, hintEl) {
+    constructor(wrapper, hintEl, onLockedAttempt) {
         this.wrapper = wrapper;
         this.cube = wrapper.querySelector('.theme-cube');
         this.hintEl = hintEl;
+        this.onLockedAttempt = onLockedAttempt || (() => {});
         this.matrix = idleMatrix();
         this.dragging = false;
         this.moved = false;
@@ -171,16 +188,30 @@ class ThemeCube {
         }
 
         this.pendingFace = face;
+        const locked = face.theme === GOLD_THEME && !isGoldUnlocked();
         const alreadyApplied = face.theme === this.currentTheme;
-        this.wrapper.classList.toggle('is-pending', !alreadyApplied);
-        this.setHint(alreadyApplied ? HINT_DEFAULT : HINT_PENDING);
+        this.wrapper.classList.toggle('is-pending', !alreadyApplied && !locked);
+        if (locked) {
+            this.setHint(HINT_LOCKED);
+        } else {
+            this.setHint(alreadyApplied ? HINT_DEFAULT : HINT_PENDING);
+        }
     }
 
     confirmTheme() {
         if (!this.pendingFace) {
             this.previewNearestFace();
         }
-        this.applyTheme(this.pendingFace.theme);
+        const face = this.pendingFace;
+
+        if (face.theme === GOLD_THEME && !isGoldUnlocked()) {
+            this.wrapper.classList.remove('is-pending');
+            this.setHint(HINT_LOCKED);
+            this.onLockedAttempt(face);
+            return;
+        }
+
+        this.applyTheme(face.theme);
         this.wrapper.classList.remove('is-pending');
         this.setHint(HINT_APPLIED);
 
@@ -212,6 +243,120 @@ class ThemeCube {
     }
 }
 
+// A short memory sequence: watch the pads light up, then repeat the pattern
+// back. Each round is a brand new random sequence (one pad longer than the
+// last) rather than the previous round's sequence with a step appended, so
+// you can't lean on remembering just "the new one" - the whole thing has to
+// be relearned every round. Reaching ROUNDS_TO_WIN correct rounds wins; a
+// wrong pad restarts from round one.
+class SimonGame {
+    constructor(padsEl, statusEl, onWin) {
+        this.pads = Array.from(padsEl.querySelectorAll('.simon-pad'));
+        this.statusEl = statusEl;
+        this.onWin = onWin;
+        this.roundsToWin = 5;
+        this.sequence = [];
+        this.playerIndex = 0;
+        this.accepting = false;
+        this.timer = null;
+
+        this.onPadClick = this.onPadClick.bind(this);
+        this.pads.forEach((pad) => pad.addEventListener('click', this.onPadClick));
+    }
+
+    start() {
+        clearTimeout(this.timer);
+        this.sequence = [];
+        this.nextRound();
+    }
+
+    stop() {
+        this.accepting = false;
+        clearTimeout(this.timer);
+        this.pads.forEach((pad) => pad.classList.remove('is-active'));
+    }
+
+    setStatus(text) {
+        if (this.statusEl) this.statusEl.textContent = text;
+    }
+
+    wait(ms) {
+        return new Promise((resolve) => {
+            this.timer = window.setTimeout(resolve, ms);
+        });
+    }
+
+    // The sequence plays back faster as rounds go on, down to a floor that
+    // keeps it just barely readable - the main source of extra difficulty.
+    flashDuration() {
+        return Math.max(180, 450 - (this.sequence.length - 1) * 30);
+    }
+
+    gapDuration() {
+        return Math.max(80, 200 - (this.sequence.length - 1) * 15);
+    }
+
+    flashPad(index) {
+        return new Promise((resolve) => {
+            const pad = this.pads[index];
+            pad.classList.add('is-active');
+            this.timer = window.setTimeout(() => {
+                pad.classList.remove('is-active');
+                resolve();
+            }, this.flashDuration());
+        });
+    }
+
+    setPadsDisabled(disabled) {
+        this.pads.forEach((pad) => {
+            pad.disabled = disabled;
+        });
+    }
+
+    async nextRound() {
+        this.playerIndex = 0;
+        this.accepting = false;
+        const length = this.sequence.length + 1;
+        this.sequence = Array.from({ length }, () => Math.floor(Math.random() * this.pads.length));
+        this.setStatus(`Round ${this.sequence.length} of ${this.roundsToWin} - watch...`);
+
+        this.setPadsDisabled(true);
+        await this.wait(500);
+        for (const index of this.sequence) {
+            await this.flashPad(index);
+            await this.wait(this.gapDuration());
+        }
+        this.setPadsDisabled(false);
+        this.accepting = true;
+        this.setStatus('Your turn - repeat it');
+    }
+
+    onPadClick(e) {
+        if (!this.accepting) return;
+        const index = Number(e.currentTarget.dataset.pad);
+        this.flashPad(index);
+
+        if (index !== this.sequence[this.playerIndex]) {
+            this.accepting = false;
+            this.setStatus('Wrong! Starting over...');
+            this.timer = window.setTimeout(() => this.start(), 1200);
+            return;
+        }
+
+        this.playerIndex += 1;
+        if (this.playerIndex < this.sequence.length) return;
+
+        if (this.sequence.length >= this.roundsToWin) {
+            this.accepting = false;
+            this.setStatus('Unlocked!');
+            this.onWin();
+        } else {
+            this.accepting = false;
+            this.timer = window.setTimeout(() => this.nextRound(), 700);
+        }
+    }
+}
+
 class ThemeCubeModal {
     constructor() {
         this.trigger = document.getElementById('themeCubeTrigger');
@@ -219,13 +364,27 @@ class ThemeCubeModal {
         this.closeBtn = document.getElementById('themeCubeClose');
         this.cubeEl = document.getElementById('themeCube');
         this.hintEl = document.getElementById('themeCubeHint');
+        this.lockIcon = document.getElementById('themeCubeLockIcon');
+        this.stageEl = document.getElementById('cubeStage');
+        this.minigameEl = document.getElementById('cubeMinigame');
+        this.minigameStatusEl = document.getElementById('cubeMinigameStatus');
+        this.minigamePadsEl = document.getElementById('simonPads');
+        this.minigameCancelBtn = document.getElementById('cubeMinigameCancel');
 
         if (!this.trigger || !this.modal || !this.closeBtn || !this.cubeEl) return;
 
-        this.cube = new ThemeCube(this.cubeEl, this.hintEl);
+        this.cube = new ThemeCube(this.cubeEl, this.hintEl, (face) => this.startMinigame(face));
+        this.updateLockIcon();
+
+        if (this.minigamePadsEl) {
+            this.simon = new SimonGame(this.minigamePadsEl, this.minigameStatusEl, () => this.onMinigameWin());
+        }
 
         this.trigger.addEventListener('click', () => this.open());
         this.closeBtn.addEventListener('click', () => this.close());
+        if (this.minigameCancelBtn) {
+            this.minigameCancelBtn.addEventListener('click', () => this.hideMinigame());
+        }
 
         // Only a press that *starts* directly on the backdrop closes the modal.
         // (A click event here would also fire after a drag that's released over
@@ -236,12 +395,53 @@ class ThemeCubeModal {
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.isOpen()) this.close();
+            if (e.key !== 'Escape' || !this.isOpen()) return;
+            // Back out one level at a time: leave the minigame first, then
+            // on a second Escape close the whole modal.
+            if (this.isMinigameOpen()) {
+                this.hideMinigame();
+            } else {
+                this.close();
+            }
         });
     }
 
     isOpen() {
         return this.modal.style.display === 'flex';
+    }
+
+    isMinigameOpen() {
+        return !!this.minigameEl && !this.minigameEl.hidden;
+    }
+
+    updateLockIcon() {
+        const topFace = this.cubeEl.querySelector('.theme-cube-face--top');
+        if (topFace) topFace.classList.toggle('is-locked', !isGoldUnlocked());
+    }
+
+    startMinigame() {
+        if (!this.minigameEl || !this.simon) return;
+        this.stageEl.style.display = 'none';
+        this.minigameEl.hidden = false;
+        this.simon.start();
+    }
+
+    hideMinigame() {
+        if (!this.minigameEl || !this.simon) return;
+        this.simon.stop();
+        this.minigameEl.hidden = true;
+        this.stageEl.style.display = '';
+        this.cubeEl.focus({ preventScroll: true });
+    }
+
+    onMinigameWin() {
+        setGoldUnlocked();
+        this.updateLockIcon();
+        this.cube.applyTheme(GOLD_THEME);
+        window.setTimeout(() => {
+            this.hideMinigame();
+            this.cube.setHint(HINT_APPLIED);
+        }, 1200);
     }
 
     open() {
@@ -262,11 +462,48 @@ class ThemeCubeModal {
         this.modal.style.display = 'none';
         this.modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        this.hideMinigame();
         this.cube.reset();
         this.trigger.focus({ preventScroll: true });
     }
 }
 
+// Fills the (otherwise CSS-hidden) #goldFx overlay with a handful of
+// randomized confetti pieces and sparkles. It's always generated - the CSS
+// rule on body.theme-gold is what actually turns it on - so there's nothing
+// to redo when the theme changes.
+function initGoldEffects() {
+    const container = document.getElementById('goldFx');
+    if (!container) return;
+
+    const confettiColors = ['#d4af37', '#f0c542', '#fff2b2', '#b8860b', '#e8c547'];
+    const confettiCount = 22;
+    const sparkleCount = 14;
+
+    for (let i = 0; i < confettiCount; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        piece.style.setProperty('--drift', `${Math.round((Math.random() - 0.5) * 120)}px`);
+        piece.style.animationDuration = `${7 + Math.random() * 6}s`;
+        piece.style.animationDelay = `-${Math.random() * 12}s`;
+        piece.style.transform = `scale(${0.7 + Math.random() * 0.6})`;
+        container.appendChild(piece);
+    }
+
+    for (let i = 0; i < sparkleCount; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = `${Math.random() * 100}%`;
+        sparkle.style.top = `${Math.random() * 100}%`;
+        sparkle.style.animationDuration = `${2 + Math.random() * 2.5}s`;
+        sparkle.style.animationDelay = `-${Math.random() * 4}s`;
+        container.appendChild(sparkle);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     new ThemeCubeModal();
+    initGoldEffects();
 });
