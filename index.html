@@ -25,6 +25,11 @@
                 <li><a href="#interests">Interests</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li class="nav-cube-item">
+                    <button type="button" class="nav-cube-trigger" id="themeCubeTrigger" aria-haspopup="dialog" aria-label="Open the theme cube to change the site's color theme">
+                        <i class="fas fa-cube"></i>
+                    </button>
+                </li>
             </ul>
         </nav>
     </header>
@@ -437,7 +442,26 @@
         </div>
     </div>
 
+    <!-- Theme Cube Modal -->
+    <div id="themeCubeModal" class="cube-modal" aria-hidden="true">
+        <div class="cube-modal-content">
+            <span class="modal-close" id="themeCubeClose">&times;</span>
+            <div class="theme-cube-wrapper" id="themeCube" tabindex="0" role="application" aria-label="Drag to spin this cube to a theme, then click it (or press Enter) to apply that theme. Arrow keys also work.">
+                <div class="theme-cube">
+                    <div class="theme-cube-face theme-cube-face--front"></div>
+                    <div class="theme-cube-face theme-cube-face--back"></div>
+                    <div class="theme-cube-face theme-cube-face--right"></div>
+                    <div class="theme-cube-face theme-cube-face--left"></div>
+                    <div class="theme-cube-face theme-cube-face--top"></div>
+                    <div class="theme-cube-face theme-cube-face--bottom"></div>
+                </div>
+            </div>
+            <p class="cube-modal-hint" id="themeCubeHint">Drag to a side, then click the cube to apply it</p>
+        </div>
+    </div>
+
     <script src="js/navigation.js"></script>
+    <script src="js/theme-cube.js"></script>
 
 </body>
 </html>

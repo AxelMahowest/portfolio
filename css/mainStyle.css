@@ -15,12 +15,56 @@
     --accent-color: var(--accent-lavender);
     --text-light: #ffffff;
     --text-dark: #2c2c2c;
+    --header-bg: rgba(247, 122, 100, 0.95);
     --primary-font: 'Lora', serif;
     --secondary-font: 'Arial MT Pro', sans-serif;
     --section-spacing: 5rem;
     --border-radius: 20px;
     --box-shadow: 0 10px 30px rgba(35, 40, 99, 0.1);
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Theme variants, selected via the theme cube */
+.theme-coral {
+    --primary-color: #232863;
+    --secondary-color: #f27a64;
+    --accent-color: #f0ecff;
+    --header-bg: rgba(247, 122, 100, 0.95);
+}
+
+.theme-teal {
+    --primary-color: #123b3d;
+    --secondary-color: #2a9d8f;
+    --accent-color: #e6f7f5;
+    --header-bg: rgba(42, 157, 143, 0.95);
+}
+
+.theme-sunset {
+    --primary-color: #4a2213;
+    --secondary-color: #e76f51;
+    --accent-color: #fdece4;
+    --header-bg: rgba(231, 111, 81, 0.95);
+}
+
+.theme-forest {
+    --primary-color: #1f3d2b;
+    --secondary-color: #52b788;
+    --accent-color: #e9f7ee;
+    --header-bg: rgba(82, 183, 136, 0.95);
+}
+
+.theme-lavender {
+    --primary-color: #332455;
+    --secondary-color: #9d8df1;
+    --accent-color: #f1eeff;
+    --header-bg: rgba(157, 141, 241, 0.95);
+}
+
+.theme-rose {
+    --primary-color: #4a1930;
+    --secondary-color: #e8739c;
+    --accent-color: #ffeef4;
+    --header-bg: rgba(232, 115, 156, 0.95);
 }
 
 html {
@@ -34,11 +78,12 @@ body {
     font-family: var(--primary-font);
     line-height: 1.7;
     color: var(--primary-color);
-    background: linear-gradient(135deg, var(--accent-lavender) 0%, #ffffff 50%, var(--accent-lavender) 100%);
+    background: linear-gradient(135deg, var(--accent-color) 0%, #ffffff 50%, var(--accent-color) 100%);
     background-attachment: fixed;
     overflow-x: hidden;
     width: 100%;
     position: relative;
+    transition: background 0.5s ease, color 0.5s ease;
 }
 
 /* Ball Decoration Styles */
@@ -91,7 +136,7 @@ body {
 
 /* Header Styles */
 header {
-    background: rgba(247, 122, 100, 0.95);
+    background: var(--header-bg);
     backdrop-filter: blur(10px);
     padding: 1.5rem 2rem;
     display: flex;
@@ -101,6 +146,7 @@ header {
     z-index: 99;
     box-shadow: var(--box-shadow);
     overflow: hidden;
+    transition: background 0.5s ease;
 }
 
 header h1 {
@@ -648,6 +694,134 @@ footer {
     transform: rotate(45deg) translate(-5px, -6px);
 }
 
+/* Nav Cube Trigger */
+.nav-cube-item {
+    display: flex;
+    align-items: center;
+}
+
+.nav-cube-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.nav-cube-trigger:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.1) rotate(12deg);
+}
+
+/* Theme Cube Modal */
+.cube-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    align-items: center;
+    justify-content: center;
+}
+
+.cube-modal-content {
+    position: relative;
+    text-align: center;
+    padding: 1rem;
+}
+
+.theme-cube-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    perspective: 700px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+.theme-cube-wrapper * {
+    -webkit-user-drag: none;
+}
+
+.theme-cube-wrapper:active {
+    cursor: grabbing;
+}
+
+.theme-cube-wrapper:focus {
+    /* No visible ring: a flat outline can't follow the rotated 3D cube
+       cleanly mid-drag, and this embedded browser applies :focus-visible
+       even for a mouse drag here, so there's no reliable mouse/keyboard
+       split to hook into. Keyboard control (arrow keys, Enter) still works
+       without it. */
+    outline: none;
+}
+
+.theme-cube {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg) rotateY(-30deg);
+}
+
+.theme-cube.is-dragging,
+.theme-cube.is-snapping {
+    transition: none;
+}
+
+.theme-cube.is-snapping {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-cube-face {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 14px;
+    backface-visibility: hidden;
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.15);
+}
+
+.theme-cube-face--front  { background: linear-gradient(135deg, #232863, #f27a64); transform: translateZ(100px); }
+.theme-cube-face--back   { background: linear-gradient(135deg, #1f3d2b, #52b788); transform: rotateY(180deg) translateZ(100px); }
+.theme-cube-face--right  { background: linear-gradient(135deg, #332455, #9d8df1); transform: rotateY(90deg) translateZ(100px); }
+.theme-cube-face--left   { background: linear-gradient(135deg, #123b3d, #2a9d8f); transform: rotateY(-90deg) translateZ(100px); }
+.theme-cube-face--top    { background: linear-gradient(135deg, #4a2213, #e76f51); transform: rotateX(90deg) translateZ(100px); }
+.theme-cube-face--bottom { background: linear-gradient(135deg, #4a1930, #e8739c); transform: rotateX(-90deg) translateZ(100px); }
+
+.cube-modal-hint {
+    margin-top: 2rem;
+    color: var(--text-light);
+    font-family: var(--secondary-font);
+    font-size: 0.95rem;
+    opacity: 0.85;
+    transition: var(--transition);
+}
+
+.theme-cube-wrapper.is-pending .theme-cube-face {
+    animation: cubePendingPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes cubePendingPulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.25); }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     /* Ensure no horizontal overflow */
@@ -835,5 +1009,30 @@ footer {
     
     .footer-content {
         padding: 0 1rem;
+    }
+
+    /* Smaller theme cube on mobile */
+    .theme-cube-wrapper {
+        width: 140px;
+        height: 140px;
+    }
+
+    .theme-cube-face {
+        width: 140px;
+        height: 140px;
+    }
+
+    .theme-cube-face--front  { transform: translateZ(70px); }
+    .theme-cube-face--back   { transform: rotateY(180deg) translateZ(70px); }
+    .theme-cube-face--right  { transform: rotateY(90deg) translateZ(70px); }
+    .theme-cube-face--left   { transform: rotateY(-90deg) translateZ(70px); }
+    .theme-cube-face--top    { transform: rotateX(90deg) translateZ(70px); }
+    .theme-cube-face--bottom { transform: rotateX(-90deg) translateZ(70px); }
+
+    .nav-cube-item {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center;
+        padding: 16px 0 !important;
     }
 }
